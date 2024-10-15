@@ -1,0 +1,70 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+void character_stuffing(char input[], int N) {
+    char output[100];
+    int k = 0;
+    char dle[3] = "DLE";
+    char stx[3] = "STX";
+    char etx[3] = "ETX";
+    int flag = 0;
+
+    for(int i = 0; i < 3; i++) {
+        output[k] = dle[i];
+        k++;
+    }
+
+    for(int i = 0; i < 3; i++) {
+        output[k] = stx[i];
+        k++;
+    }
+
+    for(int i = 0; i < N; i++) {
+        if(input[i] != 'D' || (input[i] == 'E' && flag == 0)) {
+            output[k] = input[i];
+            k++;
+        }
+
+        if(input[i] == 'D') {
+            if(input[i + 1] == 'L' && input[i + 2] == 'E') {
+                flag = 1;
+            }
+
+            output[k] = input[i];
+            k++;
+        }
+
+        if(flag == 1 && input[i] == 'E') {
+            output[k] = input[i];
+            k++;
+            output[k] = 'D';
+            k++;
+            output[k] = 'L';
+            k++;
+            output[k] = 'E';
+            k++;
+            flag = 0;
+        }
+    }
+
+    for (int i = 0; i < 3; i++) {
+        output[k] = dle[i];
+        k++;
+    }
+
+    for (int i = 0; i < 3; i++) {
+        output[k] = etx[i];
+        k++;
+    }
+
+    output[k] = '\0';
+
+    printf("Stuffed string : %s", output);
+}
+
+void main() {
+    char inp[20] = "DOODLE";
+    int N = 6;
+    character_stuffing(inp, N);
+}
