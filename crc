@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_DATA_LEN 200
+#define MAX_GEN_LEN 100
+
+void xorOperation(char *data, char *gen, int len) {
+    for (int i = 0; i < len; i++) {
+        data[i] = (data[i] == gen[i]) ? '0' : '1';
+    }
+}
+
+void calculateCRC(char *data, char *gen, int dataLen, int genLen) {
+    char temp[MAX_DATA_LEN + MAX_GEN_LEN];
+    strcpy(temp, data);
+
+    for (int i = 0; i < genLen - 1; i++) {
+        temp[dataLen + i] = '0';
+    }
+    temp[dataLen + genLen - 1] = '\0';
+
+    for (int i = 0; i <= dataLen - 1; i++) {
+        if (temp[i] == '1') {
+            xorOperation(temp + i, gen, genLen);
+        }
+    }
+
+    printf("CRC value: ");
+    for (int i = dataLen; i < dataLen + genLen - 1; i++) {
+        printf("%c", temp[i]);
+    }
+    printf("\n");
+
+    for (int i = dataLen; i < dataLen + genLen - 1; i++) {
+        data[i] = temp[i];
+    }
+    data[dataLen + genLen - 1] = '\0';
+}
+
+int main() {
+    char data[MAX_DATA_LEN], gen[MAX_GEN_LEN], received[MAX_DATA_LEN + MAX_GEN_LEN];
+    int dataLen, genLen;
+
+    printf("Enter the data sequence in binary: ");
+    scanf("%s", data);
+    printf("Enter the generator polynomial in binary: ");
+    scanf("%s", gen);
+
+    dataLen = strlen(data);
+    genLen = strlen(gen);
+
+    calculateCRC(data, gen, dataLen, genLen);
+
+    printf("Data to be transmitted: %s\n", data);
+
+    printf("Enter the received data: ");
+    scanf("%s", received);
+
+    if (strcmp(data, received) == 0) {
+        printf("Data transmission successful!\n");
+    } else {
+        printf("Data was corrupted during transmission!\n");
+    }
+
+    return 0;
+}
